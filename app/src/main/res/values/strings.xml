@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Todo Master</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_about">About Todo Master</string>
+    <string name="about_description">\nThis app is a powerful utility for managing hierarchical TO-DO lists with local storage and Matrix synchronization support.</string>
+</resources>

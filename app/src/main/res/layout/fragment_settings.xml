@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Storage Settings"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        android:paddingBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Master Lists Path"
+        android:textAppearance="?attr/textAppearanceSubtitle1" />
+
+    <EditText
+        android:id="@+id/editPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter path for master lists"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/btnSaveSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Save Settings" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Note: Changes to the path will take effect upon return to the main screen. Settings are saved to settings.json."
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="?android:attr/textColorSecondary" />
+
+</LinearLayout>

@@ -71,7 +71,7 @@
             android:layout_margin="16dp"
             android:src="@android:drawable/ic_input_add"
             app:tint="@android:color/white"
-            app:backgroundTint="@color/accent"
+            app:backgroundTint="?attr/colorAccent"
             android:contentDescription="Add master tree" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

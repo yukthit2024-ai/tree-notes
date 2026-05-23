@@ -24,8 +24,8 @@
         
         <activity android:name=".AboutActivity" android:label="About" android:theme="@style/Theme.TodoMaster.NoActionBar" />
         <activity android:name=".HelpActivity" android:label="Help" android:theme="@style/Theme.TodoMaster.NoActionBar" />
-        <activity android:name=".TreeListActivity" android:label="Tree Viewer" android:theme="@style/Theme.TodoMaster.NoActionBar" />
-        <activity android:name=".NodeEditorActivity" android:label="Edit Note" android:theme="@style/Theme.TodoMaster.NoActionBar" />
+        <activity android:name=".TreeListActivity" android:label="Tree Viewer" android:theme="@style/Theme.TodoMaster.NodesTheme" />
+        <activity android:name=".NodeEditorActivity" android:label="Edit Note" android:theme="@style/Theme.TodoMaster.NodesTheme" />
         <activity android:name=".SettingsActivity" android:label="Settings" android:theme="@style/Theme.TodoMaster.NoActionBar" />
         
     </application>

@@ -20,6 +20,11 @@
     <color name="text_on_accent">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
 
+    <!-- Nodes Theme (Green & Amber) -->
+    <color name="nodes_primary">#2E7D32</color>
+    <color name="nodes_primary_dark">#1B5E20</color>
+    <color name="nodes_accent">#FF8F00</color>
+
     <!-- Legacy / Compatibility -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:text="3"
             android:textStyle="bold"
-            android:textColor="@color/primary"
+            android:textColor="?attr/colorPrimary"
             android:background="@android:color/transparent"
             android:paddingHorizontal="4dp"
             android:layout_marginEnd="4dp" />

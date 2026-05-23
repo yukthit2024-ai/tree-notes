@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="Root"
                 android:textAppearance="?attr/textAppearanceSubtitle2"
-                android:textColor="@color/primary"
+                android:textColor="?attr/colorPrimary"
                 android:textStyle="bold" />
         </HorizontalScrollView>
 
@@ -116,7 +116,7 @@
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
         app:tint="@android:color/white"
-        app:backgroundTint="@color/accent"
+        app:backgroundTint="?attr/colorAccent"
         android:contentDescription="Add node" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

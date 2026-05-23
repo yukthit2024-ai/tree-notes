@@ -25,6 +25,13 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
+    <!-- Alternative Nodes/Children Theme (Green & Amber) -->
+    <style name="Theme.TodoMaster.NodesTheme" parent="Theme.TodoMaster.NoActionBar">
+        <item name="colorPrimary">@color/nodes_primary</item>
+        <item name="colorPrimaryDark">@color/nodes_primary_dark</item>
+        <item name="colorAccent">@color/nodes_accent</item>
+    </style>
+
     <style name="Theme.TodoMaster.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="Theme.TodoMaster.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

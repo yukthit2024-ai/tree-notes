@@ -1,10 +1,10 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.vypeensoft.todo.databinding.ItemMasterListBinding;
+import com.vypeensoft.treenode.databinding.ItemMasterListBinding;
 import java.util.List;
 
 public class MasterTreeAdapter extends RecyclerView.Adapter<MasterTreeAdapter.ViewHolder> {
@@ -57,3 +57,4 @@ public class MasterTreeAdapter extends RecyclerView.Adapter<MasterTreeAdapter.Vi
         }
     }
 }
+

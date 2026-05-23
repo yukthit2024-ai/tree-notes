@@ -1,4 +1,4 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import com.vypeensoft.todo.databinding.ActivitySettingsBinding;
+import com.vypeensoft.treenode.databinding.ActivitySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -148,3 +148,4 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

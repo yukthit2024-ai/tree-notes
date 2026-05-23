@@ -1,9 +1,9 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
-import com.vypeensoft.todo.databinding.ActivityNodeEditorBinding;
+import com.vypeensoft.treenode.databinding.ActivityNodeEditorBinding;
 
 import java.util.List;
 
@@ -103,3 +103,4 @@ public class NodeEditorActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

@@ -1,4 +1,4 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -40,3 +40,4 @@ public class HelpActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

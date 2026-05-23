@@ -1,4 +1,4 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
-import com.vypeensoft.todo.databinding.ItemTreeNodeBinding;
+import com.vypeensoft.treenode.databinding.ItemTreeNodeBinding;
 import java.util.List;
 
 public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHolder> {
@@ -110,3 +110,4 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -40,3 +40,4 @@ public class AboutActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

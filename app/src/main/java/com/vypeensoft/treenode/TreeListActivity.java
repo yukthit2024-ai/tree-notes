@@ -1,4 +1,4 @@
-package com.vypeensoft.todo;
+package com.vypeensoft.treenode;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.vypeensoft.todo.databinding.ActivityTreeListBinding;
+import com.vypeensoft.treenode.databinding.ActivityTreeListBinding;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -321,3 +321,4 @@ public class TreeListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 }
+

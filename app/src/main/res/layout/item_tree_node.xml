@@ -15,21 +15,23 @@
         android:padding="8dp"
         android:gravity="center_vertical">
 
+        <!-- Left Folder/Note icon -->
         <ImageView
             android:id="@+id/imgNodeIcon"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_margin="8dp"
+            android:layout_margin="4dp"
             android:src="@drawable/ic_folder"
             android:contentDescription="Node icon" />
 
+        <!-- Title & Subtitle vertical block -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp">
+            android:layout_marginEnd="4dp">
 
             <TextView
                 android:id="@+id/textNodeTitle"
@@ -53,6 +55,7 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
+        <!-- Child nodes count badge -->
         <TextView
             android:id="@+id/textChildCount"
             android:layout_width="wrap_content"
@@ -62,22 +65,52 @@
             android:textColor="?attr/colorPrimary"
             android:background="@android:color/transparent"
             android:paddingHorizontal="4dp"
-            android:layout_marginEnd="4dp" />
+            android:layout_marginEnd="8dp" />
 
-        <ImageView
-            android:id="@+id/imgChevron"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_chevron_right"
-            android:contentDescription="Navigation arrow" />
+        <!-- In-list Action Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/btnMoreActions"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_more"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Actions menu" />
+            <ImageButton
+                android:id="@+id/btnActionAddChild"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_add"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="Add child node" />
+
+            <ImageButton
+                android:id="@+id/btnActionEdit"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_edit"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@color/text_secondary"
+                android:contentDescription="Edit node" />
+
+            <ImageButton
+                android:id="@+id/btnActionMoveUp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_arrow_up"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@color/text_secondary"
+                android:contentDescription="Move node up" />
+
+            <ImageButton
+                android:id="@+id/btnActionDelete"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@color/error"
+                android:contentDescription="Delete node" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -116,11 +116,6 @@ public class TreeListActivity extends AppCompatActivity {
             public void onMoveUp(TreeNode node, int position) {
                 moveNode(position, -1);
             }
-
-            @Override
-            public void onMoveDown(TreeNode node, int position) {
-                moveNode(position, 1);
-            }
         });
         binding.recyclerView.setAdapter(adapter);
 

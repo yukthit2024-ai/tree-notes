@@ -1,11 +1,9 @@
 package com.vypeensoft.treenode;
 
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import com.vypeensoft.treenode.databinding.ItemTreeNodeBinding;
 import java.util.List;
@@ -18,7 +16,6 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
         void onEdit(TreeNode node);
         void onDelete(TreeNode node);
         void onMoveUp(TreeNode node, int position);
-        void onMoveDown(TreeNode node, int position);
     }
 
     private final List<TreeNode> nodes;
@@ -56,43 +53,44 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
             holder.binding.imgNodeIcon.setImageResource(R.drawable.ic_folder);
             holder.binding.textChildCount.setText(String.valueOf(node.getChildren().size()));
             holder.binding.textChildCount.setVisibility(View.VISIBLE);
-            holder.binding.imgChevron.setVisibility(View.VISIBLE);
         } else {
             holder.binding.imgNodeIcon.setImageResource(R.drawable.ic_note);
             holder.binding.textChildCount.setVisibility(View.GONE);
-            holder.binding.imgChevron.setVisibility(View.GONE);
         }
 
+        // Hide/Show Move Up action depending on list index bounds
+        if (position == 0) {
+            holder.binding.btnActionMoveUp.setVisibility(View.INVISIBLE);
+        } else {
+            holder.binding.btnActionMoveUp.setVisibility(View.VISIBLE);
+        }
+
+        // Card tap navigation
         holder.itemView.setOnClickListener(v -> listener.onNodeClick(node));
 
-        holder.binding.btnMoreActions.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(v.getContext(), v);
-            popup.getMenu().add("Add Child");
-            popup.getMenu().add("Edit Node");
-            popup.getMenu().add("Delete");
-            if (position > 0) {
-                popup.getMenu().add("Move Up");
+        // Inline Action button clicks
+        holder.binding.btnActionAddChild.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onAddChild(node);
             }
-            if (position < getItemCount() - 1) {
-                popup.getMenu().add("Move Down");
-            }
+        });
 
-            popup.setOnMenuItemClickListener(item -> {
-                String title = item.getTitle().toString();
-                if (title.equals("Add Child")) {
-                    listener.onAddChild(node);
-                } else if (title.equals("Edit Node")) {
-                    listener.onEdit(node);
-                } else if (title.equals("Delete")) {
-                    listener.onDelete(node);
-                } else if (title.equals("Move Up")) {
-                    listener.onMoveUp(node, position);
-                } else if (title.equals("Move Down")) {
-                    listener.onMoveDown(node, position);
-                }
-                return true;
-            });
-            popup.show();
+        holder.binding.btnActionEdit.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onEdit(node);
+            }
+        });
+
+        holder.binding.btnActionMoveUp.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onMoveUp(node, position);
+            }
+        });
+
+        holder.binding.btnActionDelete.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDelete(node);
+            }
         });
     }
 
@@ -110,4 +108,3 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
         }
     }
 }
-

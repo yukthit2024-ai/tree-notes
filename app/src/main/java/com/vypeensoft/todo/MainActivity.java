@@ -1,125 +1,242 @@
 package com.vypeensoft.todo;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.navigation.NavigationView;
+import com.vypeensoft.todo.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
-    private DrawerLayout drawer;
-    private static final int PERMISSION_REQUEST_CODE = 100;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ActivityMainBinding binding;
+    private JsonStorageManager storageManager;
+    private MasterTreeAdapter adapter;
+    private final List<TreeDocument> treeDocuments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        ThemeUtils.applyTheme(this);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        checkPermissions();
+        storageManager = new JsonStorageManager(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+        // Setup Toolbar
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Tree Notes");
+        }
+
+        // Setup Drawer
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, binding.drawerLayout, binding.toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
-            updateActionBarNavigation(toggle);
-        });
-        updateActionBarNavigation(toggle);
+        binding.navView.setNavigationItemSelectedListener(this);
+        binding.navView.setCheckedItem(R.id.nav_home);
 
-        navigationView.setNavigationItemSelectedListener(item -> {
-            Fragment fragment = null;
-            int id = item.getItemId();
-            if (id == R.id.nav_main) fragment = new MainFragment();
-            else if (id == R.id.nav_settings) fragment = new SettingsFragment();
-            else if (id == R.id.nav_matrix) fragment = new MatrixFragment();
-            else if (id == R.id.nav_groups) fragment = new GroupsFragment();
-            else if (id == R.id.nav_help) {
-                startActivity(new Intent(MainActivity.this, HelpActivity.class));
+        // Setup RecyclerView
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new MasterTreeAdapter(treeDocuments, new MasterTreeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(TreeDocument document) {
+                Intent intent = new Intent(MainActivity.this, TreeListActivity.class);
+                intent.putExtra("document_id", document.getId());
+                startActivity(intent);
             }
-            else if (id == R.id.nav_about) {
-                startActivity(new Intent(MainActivity.this, AboutActivity.class));
-            }
-            if (fragment != null) getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
-        });
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_main);
-        }
-    }
 
-    private void checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!Environment.isExternalStorageManager()) {
-                try {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                    intent.addCategory("android.intent.category.DEFAULT");
-                    intent.setData(Uri.parse(String.format("package:%s", getPackageName())));
-                    startActivity(intent);
-                } catch (Exception e) {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                    startActivity(intent);
-                }
+            @Override
+            public void onDeleteClick(TreeDocument document) {
+                showDeleteConfirmationDialog(document);
             }
-        } else {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+
+            @Override
+            public void onRenameClick(TreeDocument document) {
+                showRenameDialog(document);
             }
-        }
+        });
+        binding.recyclerView.setAdapter(adapter);
+
+        // Setup FAB
+        binding.fabAddTree.setOnClickListener(v -> showAddTreeDialog());
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
-            } else {
-                // Permission denied
-            }
+    protected void onResume() {
+        super.onResume();
+        binding.navView.setCheckedItem(R.id.nav_home);
+        loadMasterTrees();
+    }
+
+    private void loadMasterTrees() {
+        treeDocuments.clear();
+        List<TreeDocument> loaded = storageManager.loadAllMasterTrees();
+        if (loaded != null) {
+            // Sort alphabetically as requested
+            loaded.sort((d1, d2) -> {
+                if (d1.getName() == null) return -1;
+                if (d2.getName() == null) return 1;
+                return d1.getName().compareToIgnoreCase(d2.getName());
+            });
+            treeDocuments.addAll(loaded);
+        }
+        adapter.notifyDataSetChanged();
+        updateEmptyState();
+    }
+
+    private void updateEmptyState() {
+        if (treeDocuments.isEmpty()) {
+            binding.layoutEmptyState.setVisibility(View.VISIBLE);
+            binding.recyclerView.setVisibility(View.GONE);
+        } else {
+            binding.layoutEmptyState.setVisibility(View.GONE);
+            binding.recyclerView.setVisibility(View.VISIBLE);
         }
     }
+
+    private void showAddTreeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("New Master Tree");
+
+        final EditText input = new EditText(this);
+        input.setHint("Tree Name");
+        input.setSingleLine(true);
+        
+        // Add padding to EditText
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        params.rightMargin = getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        input.setLayoutParams(params);
+        container.addView(input);
+        builder.setView(container);
+
+        builder.setPositiveButton("Create", (dialog, which) -> {
+            String name = input.getText().toString().trim();
+            if (!name.isEmpty()) {
+                String id = UUID.randomUUID().toString();
+                TreeDocument doc = new TreeDocument(id, name);
+                storageManager.saveTreeDocument(doc);
+                loadMasterTrees();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        AlertDialog dialog = builder.create();
+        
+        // Automatically focus and show keyboard
+        dialog.setOnShowListener(d -> {
+            input.requestFocus();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showRenameDialog(TreeDocument document) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Rename Tree");
+
+        final EditText input = new EditText(this);
+        input.setText(document.getName());
+        input.setSelection(input.getText().length());
+        input.setSingleLine(true);
+
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        params.rightMargin = getResources().getDimensionPixelSize(R.dimen.dialog_margin);
+        input.setLayoutParams(params);
+        container.addView(input);
+        builder.setView(container);
+
+        builder.setPositiveButton("Rename", (dialog, which) -> {
+            String name = input.getText().toString().trim();
+            if (!name.isEmpty()) {
+                storageManager.renameTreeDocument(document.getId(), name);
+                loadMasterTrees();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        AlertDialog dialog = builder.create();
+
+        // Automatically focus and show keyboard
+        dialog.setOnShowListener(d -> {
+            input.requestFocus();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showDeleteConfirmationDialog(TreeDocument document) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Tree")
+                .setMessage("Are you sure you want to delete '" + document.getName() + "'?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    storageManager.deleteTreeDocument(document.getId());
+                    loadMasterTrees();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.nav_help) {
+            startActivity(new Intent(this, HelpActivity.class));
+        } else if (id == R.id.nav_about) {
+            startActivity(new Intent(this, AboutActivity.class));
+        }
+
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
-        else super.onBackPressed();
-    }
-
-    private void updateActionBarNavigation(ActionBarDrawerToggle toggle) {
-        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-        if (backStackCount > 0) {
-            toggle.setDrawerIndicatorEnabled(false);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
-            toggle.setToolbarNavigationClickListener(v -> onBackPressed());
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            }
-            toggle.setDrawerIndicatorEnabled(true);
-            toggle.syncState();
+            super.onBackPressed();
         }
     }
 }

@@ -26,7 +26,7 @@ public class HelpActivity extends AppCompatActivity {
         btnEmail.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:support@vypeensoft.com"));
-            intent.putExtra(Intent.EXTRA_SUBJECT, "TodoMaster Support Request");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Tree Notes Support Request");
             startActivity(Intent.createChooser(intent, "Send Email"));
         });
     }
@@ -34,7 +34,7 @@ public class HelpActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

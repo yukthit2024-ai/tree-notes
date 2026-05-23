@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Frequently Asked Questions"
+                android:text="Tree Notes Guide"
                 android:textColor="@color/primary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -54,7 +54,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How to add a new task?"
+                        android:text="How does tree navigation work?"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -63,7 +63,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Tap the floating '+' button on the main screen to create a new task list or item."
+                        android:text="Tap on any Master Tree to open its hierarchical view. Tap on nodes containing children (indicated by a folder icon and a count badge) to go deeper. Tap on leaf nodes (indicated by a note icon) to open the editor and write content. There is no limit to the nesting depth!"
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
@@ -77,7 +77,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How to delete a list?"
+                        android:text="How do I add a new node or child?"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -86,7 +86,30 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Long press on any list in the main screen to see the delete option."
+                        android:text="Tap the floating '+' button to add a new node at the current level. If you want to add a nested child node to a specific item, tap the three-dot overflow menu on that item and select 'Add Child'. That item will automatically turn into a folder node!"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@color/divider" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="How do I reorder items?"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Tap the three-dot menu on any item and select 'Move Up' or 'Move Down' to dynamically reorder items in that specific level list."
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 
@@ -109,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Your data is stored locally on your device in JSON format. You can configure the storage path in Settings."
+                        android:text="Your tree notes are saved locally on your device in highly structured JSON files. By default, it saves inside the app's secure files folder. You can configure a custom directory using the Storage Access Framework (SAF) in Settings, and create ZIP archives of all your notes for backup."
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
 

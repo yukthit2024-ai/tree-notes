@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Todo Master</string>
+    <string name="app_name">Tree Notes</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_about">About Todo Master</string>
-    <string name="about_description">\nThis app is a powerful utility for managing hierarchical TO-DO lists with local storage and Matrix synchronization support.</string>
+    <string name="title_about">About Tree Notes</string>
+    <string name="about_description">\nTree Notes is a high-performance, robust, hierarchical tree-based notes manager. It organizes your ideas recursively and stores them locally on your device in standard JSON files. Supporting unlimited nesting depth, search functionality, reordering, and robust SAF folder selections, it is the ultimate tool for structured thinking.</string>
 </resources>

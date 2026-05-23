@@ -134,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity {
                 selectedTheme = ThemeUtils.THEME_DARK;
             }
 
-            prefs.edit().putString(ThemeUtils.PREF_THEME, selectedTheme).apply();
+            storageManager.setAppThemeString(selectedTheme);
             ThemeUtils.applyTheme(selectedTheme);
         });
     }

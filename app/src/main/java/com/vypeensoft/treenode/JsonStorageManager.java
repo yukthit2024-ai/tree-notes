@@ -27,9 +27,16 @@ public class JsonStorageManager {
     private final Context context;
     private final Gson gson;
 
+    public static class SettingsModel {
+        public String storage_directory_uri = "";
+        public String app_theme = "system";
+    }
+
     public JsonStorageManager(Context context) {
         this.context = context.getApplicationContext();
         this.gson = new GsonBuilder().setPrettyPrinting().create();
+        // Load initial settings from the public settings file
+        loadSettingsFromFile();
     }
 
     public String getStorageUriString() {
@@ -40,6 +47,15 @@ public class JsonStorageManager {
     public void setStorageUriString(String uriString) {
         SharedPreferences prefs = context.getSharedPreferences(ThemeUtils.PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(PREF_KEY_STORAGE_URI, uriString).apply();
+        String currentTheme = prefs.getString(ThemeUtils.PREF_THEME, "system");
+        saveSettingsToFile(uriString, currentTheme);
+    }
+
+    public void setAppThemeString(String themeString) {
+        SharedPreferences prefs = context.getSharedPreferences(ThemeUtils.PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putString(ThemeUtils.PREF_THEME, themeString).apply();
+        String currentUri = prefs.getString(PREF_KEY_STORAGE_URI, "");
+        saveSettingsToFile(currentUri, themeString);
     }
 
     public String getStoragePathDisplayName() {
@@ -58,15 +74,77 @@ public class JsonStorageManager {
     }
 
     private File getDefaultStorageDir() {
-        File baseDir = context.getExternalFilesDir(null);
-        if (baseDir == null) {
-            baseDir = context.getFilesDir();
+        File defaultDir = new File("/sdcard/Vypeensoft/Tree_Notes");
+        try {
+            if (!defaultDir.exists()) {
+                defaultDir.mkdirs();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating default sdcard dir: " + e.getMessage());
         }
-        File defaultDir = new File(baseDir, DEFAULT_FOLDER_NAME);
-        if (!defaultDir.exists()) {
-            defaultDir.mkdirs();
+        
+        // Fallback to sandboxed directory if not writable or creation failed
+        if (!defaultDir.exists() || !defaultDir.canWrite()) {
+            File baseDir = context.getExternalFilesDir(null);
+            if (baseDir == null) {
+                baseDir = context.getFilesDir();
+            }
+            defaultDir = new File(baseDir, DEFAULT_FOLDER_NAME);
+            if (!defaultDir.exists()) {
+                defaultDir.mkdirs();
+            }
         }
         return defaultDir;
+    }
+
+    public void saveSettingsToFile(String uriString, String themeString) {
+        try {
+            File settingsFile = new File("/sdcard/Vypeensoft/Tree_Notes/settings/settings.json");
+            File parentDir = settingsFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+            SettingsModel model = new SettingsModel();
+            model.storage_directory_uri = uriString;
+            model.app_theme = themeString;
+            String jsonStr = gson.toJson(model);
+            try (FileOutputStream fos = new FileOutputStream(settingsFile);
+                 OutputStreamWriter osw = new java.io.OutputStreamWriter(fos, "UTF-8")) {
+                osw.write(jsonStr);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving settings JSON to sdcard: " + e.getMessage(), e);
+        }
+    }
+
+    public void loadSettingsFromFile() {
+        try {
+            File settingsFile = new File("/sdcard/Vypeensoft/Tree_Notes/settings/settings.json");
+            if (settingsFile.exists()) {
+                try (FileInputStream fis = new FileInputStream(settingsFile);
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis, "UTF-8"))) {
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    SettingsModel model = gson.fromJson(sb.toString(), SettingsModel.class);
+                    if (model != null) {
+                        SharedPreferences prefs = context.getSharedPreferences(ThemeUtils.PREFS_NAME, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        if (model.storage_directory_uri != null) {
+                            editor.putString(PREF_KEY_STORAGE_URI, model.storage_directory_uri);
+                        }
+                        if (model.app_theme != null) {
+                            editor.putString(ThemeUtils.PREF_THEME, model.app_theme);
+                        }
+                        editor.apply();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading settings JSON from sdcard: " + e.getMessage(), e);
+        }
     }
 
     public List<TreeDocument> loadAllMasterTrees() {

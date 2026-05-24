@@ -89,7 +89,7 @@ public class TreeListActivity extends AppCompatActivity {
                     Intent intent = new Intent(TreeListActivity.this, TreeListActivity.class);
                     intent.putExtra("document_id", documentId);
                     intent.putExtra("parent_node_id", node.getId());
-                    intent.putExtra("breadcrumb_path", breadcrumbPath + " > " + node.getTitle());
+                    intent.putExtra("breadcrumb_path", buildBreadcrumbPath(node));
                     startActivity(intent);
                 } else {
                     // Open editor
@@ -166,15 +166,28 @@ public class TreeListActivity extends AppCompatActivity {
         } else {
             String lowerQuery = query.toLowerCase().trim();
             for (TreeNode node : currentNodesList) {
-                boolean matchTitle = node.getTitle() != null && node.getTitle().toLowerCase().contains(lowerQuery);
-                boolean matchContent = node.getContent() != null && node.getContent().toLowerCase().contains(lowerQuery);
-                if (matchTitle || matchContent) {
-                    filteredNodesList.add(node);
-                }
+                searchRecursively(node, lowerQuery, filteredNodesList);
             }
         }
         adapter.notifyDataSetChanged();
         updateEmptyState();
+    }
+
+    private void searchRecursively(TreeNode node, String query, List<TreeNode> results) {
+        if (node == null) return;
+        
+        boolean matchTitle = node.getTitle() != null && node.getTitle().toLowerCase().contains(query);
+        boolean matchContent = node.getContent() != null && node.getContent().toLowerCase().contains(query);
+        
+        if (matchTitle || matchContent) {
+            results.add(node);
+        }
+        
+        if (node.getChildren() != null) {
+            for (TreeNode child : node.getChildren()) {
+                searchRecursively(child, query, results);
+            }
+        }
     }
 
     private void updateEmptyState() {
@@ -309,6 +322,36 @@ public class TreeListActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private String buildBreadcrumbPath(TreeNode targetNode) {
+        List<String> pathSegments = new ArrayList<>();
+        pathSegments.add(document.getName());
+        findPathSegments(document.getRootNodes(), targetNode.getId(), pathSegments);
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < pathSegments.size(); i++) {
+            sb.append(pathSegments.get(i));
+            if (i < pathSegments.size() - 1) {
+                sb.append(" > ");
+            }
+        }
+        return sb.toString();
+    }
+
+    private boolean findPathSegments(List<TreeNode> currentList, String targetId, List<String> pathSegments) {
+        if (currentList == null) return false;
+        for (TreeNode node : currentList) {
+            pathSegments.add(node.getTitle());
+            if (node.getId().equals(targetId)) {
+                return true;
+            }
+            if (findPathSegments(node.getChildren(), targetId, pathSegments)) {
+                return true;
+            }
+            pathSegments.remove(pathSegments.size() - 1);
+        }
+        return false;
     }
 }
 

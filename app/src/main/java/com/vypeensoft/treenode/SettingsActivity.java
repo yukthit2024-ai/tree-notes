@@ -31,8 +31,12 @@ public class SettingsActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Settings");
         }
 
-        // Set static path display
-        binding.textCurrentPath.setText("/sdcard/Vypeensoft/Tree_Notes");
+        // Set path display to current storage location
+        String currentPath = storageManager.getStorageUriString();
+        if (currentPath.isEmpty()) {
+            currentPath = "/sdcard/Vypeensoft/Tree_Notes/";
+        }
+        binding.editStoragePath.setText(currentPath);
 
         // Load initial theme settings
         selectedTheme = prefs.getString(ThemeUtils.PREF_THEME, ThemeUtils.THEME_SYSTEM);
@@ -40,7 +44,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Bind single "Save Configuration" click listener
         binding.btnSaveConfiguration.setOnClickListener(v -> {
-            // Save settings both to SharedPrefs and the JSON settings file on sdcard
+            String typedPath = binding.editStoragePath.getText().toString().trim();
+            if (typedPath.isEmpty()) {
+                typedPath = "/sdcard/Vypeensoft/Tree_Notes/";
+            }
+            
+            // Save path and theme both to SharedPrefs and the JSON settings file on sdcard
+            storageManager.setStorageUriString(typedPath);
             storageManager.setAppThemeString(selectedTheme);
             ThemeUtils.applyTheme(selectedTheme);
             

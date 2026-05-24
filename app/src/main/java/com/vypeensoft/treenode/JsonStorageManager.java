@@ -60,9 +60,8 @@ public class JsonStorageManager {
 
     public String getStoragePathDisplayName() {
         String uriStr = getStorageUriString();
-        if (uriStr.isEmpty()) {
-            File defaultDir = getDefaultStorageDir();
-            return defaultDir.getAbsolutePath();
+        if (uriStr.isEmpty() || !uriStr.startsWith("content://")) {
+            return getResolvedStorageDir().getAbsolutePath();
         } else {
             try {
                 Uri uri = Uri.parse(uriStr);
@@ -95,6 +94,25 @@ public class JsonStorageManager {
             }
         }
         return defaultDir;
+    }
+
+    public File getResolvedStorageDir() {
+        String uriStr = getStorageUriString();
+        if (uriStr.isEmpty() || uriStr.startsWith("content://")) {
+            return getDefaultStorageDir();
+        }
+        File customDir = new File(uriStr);
+        try {
+            if (!customDir.exists()) {
+                customDir.mkdirs();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating custom storage dir: " + e.getMessage());
+        }
+        if (customDir.exists() && customDir.canWrite()) {
+            return customDir;
+        }
+        return getDefaultStorageDir();
     }
 
     public void saveSettingsToFile(String uriString, String themeString) {
@@ -151,8 +169,8 @@ public class JsonStorageManager {
         List<TreeDocument> list = new ArrayList<>();
         String uriStr = getStorageUriString();
 
-        if (uriStr.isEmpty()) {
-            File dir = getDefaultStorageDir();
+        if (uriStr.isEmpty() || !uriStr.startsWith("content://")) {
+            File dir = getResolvedStorageDir();
             File[] files = dir.listFiles((d, name) -> name.endsWith(".json") && !name.contains(".deleted"));
             if (files != null) {
                 for (File file : files) {
@@ -187,8 +205,8 @@ public class JsonStorageManager {
 
     public TreeDocument loadTreeDocument(String docName) {
         String uriStr = getStorageUriString();
-        if (uriStr.isEmpty()) {
-            File dir = getDefaultStorageDir();
+        if (uriStr.isEmpty() || !uriStr.startsWith("content://")) {
+            File dir = getResolvedStorageDir();
             File file = new File(dir, docName + ".json");
             if (file.exists()) {
                 return loadFromFile(file);
@@ -217,8 +235,8 @@ public class JsonStorageManager {
         String jsonStr = gson.toJson(doc);
         String uriStr = getStorageUriString();
 
-        if (uriStr.isEmpty()) {
-            File dir = getDefaultStorageDir();
+        if (uriStr.isEmpty() || !uriStr.startsWith("content://")) {
+            File dir = getResolvedStorageDir();
             File file = new File(dir, doc.getName() + ".json");
             try (FileOutputStream fos = new FileOutputStream(file);
                  OutputStreamWriter osw = new java.io.OutputStreamWriter(fos, "UTF-8")) {
@@ -255,8 +273,8 @@ public class JsonStorageManager {
     public boolean renameTreeDocument(String oldName, String newName) {
         TreeDocument doc = loadTreeDocument(oldName);
         if (doc != null) {
-            if (getStorageUriString().isEmpty()) {
-                File dir = getDefaultStorageDir();
+            if (getStorageUriString().isEmpty() || !getStorageUriString().startsWith("content://")) {
+                File dir = getResolvedStorageDir();
                 File oldFile = new File(dir, oldName + ".json");
                 File newFile = new File(dir, newName + ".json");
                 if (oldFile.exists()) {
@@ -287,8 +305,8 @@ public class JsonStorageManager {
         long timestamp = System.currentTimeMillis();
         String deletedFileName = docName + "_" + timestamp + ".deleted.json";
 
-        if (uriStr.isEmpty()) {
-            File dir = getDefaultStorageDir();
+        if (uriStr.isEmpty() || !uriStr.startsWith("content://")) {
+            File dir = getResolvedStorageDir();
             File file = new File(dir, docName + ".json");
             if (file.exists()) {
                 // Soft delete: Move to a "deleted" subfolder with timestamp
@@ -306,7 +324,6 @@ public class JsonStorageManager {
                 if (dir != null) {
                     DocumentFile file = dir.findFile(docName + ".json");
                     if (file != null && file.exists()) {
-                        // Rename inside the same folder to represent soft delete
                         return file.renameTo(deletedFileName);
                     }
                 }
@@ -350,7 +367,7 @@ public class JsonStorageManager {
     public List<DocumentFile> listAllTreeFilesSAF() {
         List<DocumentFile> list = new ArrayList<>();
         String uriStr = getStorageUriString();
-        if (!uriStr.isEmpty()) {
+        if (!uriStr.isEmpty() && uriStr.startsWith("content://")) {
             try {
                 Uri treeUri = Uri.parse(uriStr);
                 DocumentFile dir = DocumentFile.fromTreeUri(context, treeUri);
@@ -372,7 +389,7 @@ public class JsonStorageManager {
 
     public List<File> listAllTreeFilesLocal() {
         List<File> list = new ArrayList<>();
-        File dir = getDefaultStorageDir();
+        File dir = getResolvedStorageDir();
         File[] files = dir.listFiles((d, name) -> name.endsWith(".json") && !name.contains(".deleted"));
         if (files != null) {
             for (File f : files) {
@@ -382,4 +399,3 @@ public class JsonStorageManager {
         return list;
     }
 }
-

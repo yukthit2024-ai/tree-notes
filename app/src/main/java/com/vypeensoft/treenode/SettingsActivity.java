@@ -99,7 +99,9 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         binding.btnExportZip.setOnClickListener(v -> {
-            exportZipLauncher.launch("treenotes_backup.zip");
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd.HHmmss", java.util.Locale.US);
+            String timestamp = sdf.format(new java.util.Date());
+            exportZipLauncher.launch("treenotes_backup_" + timestamp + ".zip");
         });
 
         binding.btnImportZip.setOnClickListener(v -> {

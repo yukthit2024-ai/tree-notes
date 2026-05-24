@@ -67,15 +67,19 @@
                             android:textAppearance="?attr/textAppearanceBody2"
                             android:textColor="@color/text_secondary" />
 
-                        <TextView
-                            android:id="@+id/textCurrentPath"
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="/sdcard/Vypeensoft/Tree_Notes"
-                            android:textAppearance="?attr/textAppearanceBody1"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorPrimary" />
+                            android:layout_marginTop="12dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editStoragePath"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Storage Directory Path"
+                                android:singleLine="true" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

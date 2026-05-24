@@ -111,11 +111,6 @@ public class TreeListActivity extends AppCompatActivity {
             public void onDelete(TreeNode node) {
                 showDeleteNodeDialog(node);
             }
-
-            @Override
-            public void onMoveUp(TreeNode node, int position) {
-                moveNode(position, -1);
-            }
         });
         binding.recyclerView.setAdapter(adapter);
 

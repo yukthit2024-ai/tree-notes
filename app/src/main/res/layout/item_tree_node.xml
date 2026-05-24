@@ -72,12 +72,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:layout_marginStart="4dp">
 
             <ImageButton
                 android:id="@+id/btnActionAddChild"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_add"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="?attr/colorPrimary"
@@ -85,26 +88,21 @@
 
             <ImageButton
                 android:id="@+id/btnActionEdit"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="@color/text_secondary"
                 android:contentDescription="Edit node" />
 
             <ImageButton
-                android:id="@+id/btnActionMoveUp"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_arrow_up"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="@color/text_secondary"
-                android:contentDescription="Move node up" />
-
-            <ImageButton
                 android:id="@+id/btnActionDelete"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_delete"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="@color/error"

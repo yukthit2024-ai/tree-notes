@@ -15,7 +15,6 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
         void onAddChild(TreeNode node);
         void onEdit(TreeNode node);
         void onDelete(TreeNode node);
-        void onMoveUp(TreeNode node, int position);
     }
 
     private final List<TreeNode> nodes;
@@ -58,13 +57,6 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
             holder.binding.textChildCount.setVisibility(View.GONE);
         }
 
-        // Hide/Show Move Up action depending on list index bounds
-        if (position == 0) {
-            holder.binding.btnActionMoveUp.setVisibility(View.INVISIBLE);
-        } else {
-            holder.binding.btnActionMoveUp.setVisibility(View.VISIBLE);
-        }
-
         // Card tap navigation
         holder.itemView.setOnClickListener(v -> listener.onNodeClick(node));
 
@@ -78,12 +70,6 @@ public class TreeNodeAdapter extends RecyclerView.Adapter<TreeNodeAdapter.ViewHo
         holder.binding.btnActionEdit.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onEdit(node);
-            }
-        });
-
-        holder.binding.btnActionMoveUp.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onMoveUp(node, position);
             }
         });
 

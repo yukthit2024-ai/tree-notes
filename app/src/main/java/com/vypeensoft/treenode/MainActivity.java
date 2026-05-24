@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(binding.getRoot());
 
         storageManager = new JsonStorageManager(this);
+        checkAndRequestStoragePermissions();
 
         // Setup Toolbar
         setSupportActionBar(binding.toolbar);
@@ -238,6 +239,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             binding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void checkAndRequestStoragePermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            if (!android.os.Environment.isExternalStorageManager()) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Storage Permission Required")
+                        .setMessage("Tree Notes requires 'All Files Access' to read and save your hierarchical tree files to /sdcard/Vypeensoft/Tree_Notes/. Please grant this permission on the next screen.")
+                        .setPositiveButton("Grant Permission", (dialog, which) -> {
+                            try {
+                                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                                intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        } else {
+            String[] permissions = new String[]{
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+            boolean allGranted = true;
+            for (String perm : permissions) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(this, perm) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+            if (!allGranted) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, permissions, 100);
+            }
         }
     }
 }

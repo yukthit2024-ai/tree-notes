@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onItemClick(TreeDocument document) {
                 Intent intent = new Intent(MainActivity.this, TreeListActivity.class);
-                intent.putExtra("document_id", document.getId());
+                intent.putExtra("document_id", document.getName());
                 startActivity(intent);
             }
 
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setPositiveButton("Rename", (dialog, which) -> {
             String name = input.getText().toString().trim();
             if (!name.isEmpty()) {
-                storageManager.renameTreeDocument(document.getId(), name);
+                storageManager.renameTreeDocument(document.getName(), name);
                 loadMasterTrees();
             }
         });
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setTitle("Delete Tree")
                 .setMessage("Are you sure you want to delete '" + document.getName() + "'?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    storageManager.deleteTreeDocument(document.getId());
+                    storageManager.deleteTreeDocument(document.getName());
                     loadMasterTrees();
                 })
                 .setNegativeButton("Cancel", null)

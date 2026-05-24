@@ -185,11 +185,11 @@ public class JsonStorageManager {
         return list;
     }
 
-    public TreeDocument loadTreeDocument(String docId) {
+    public TreeDocument loadTreeDocument(String docName) {
         String uriStr = getStorageUriString();
         if (uriStr.isEmpty()) {
             File dir = getDefaultStorageDir();
-            File file = new File(dir, docId + ".json");
+            File file = new File(dir, docName + ".json");
             if (file.exists()) {
                 return loadFromFile(file);
             }
@@ -198,7 +198,7 @@ public class JsonStorageManager {
                 Uri treeUri = Uri.parse(uriStr);
                 DocumentFile dir = DocumentFile.fromTreeUri(context, treeUri);
                 if (dir != null) {
-                    DocumentFile file = dir.findFile(docId + ".json");
+                    DocumentFile file = dir.findFile(docName + ".json");
                     if (file != null && file.exists()) {
                         return loadFromDocumentFile(file);
                     }
@@ -211,7 +211,7 @@ public class JsonStorageManager {
     }
 
     public boolean saveTreeDocument(TreeDocument doc) {
-        if (doc == null || doc.getId() == null || doc.getId().isEmpty()) {
+        if (doc == null || doc.getName() == null || doc.getName().isEmpty()) {
             return false;
         }
         String jsonStr = gson.toJson(doc);
@@ -219,7 +219,7 @@ public class JsonStorageManager {
 
         if (uriStr.isEmpty()) {
             File dir = getDefaultStorageDir();
-            File file = new File(dir, doc.getId() + ".json");
+            File file = new File(dir, doc.getName() + ".json");
             try (FileOutputStream fos = new FileOutputStream(file);
                  OutputStreamWriter osw = new java.io.OutputStreamWriter(fos, "UTF-8")) {
                 osw.write(jsonStr);
@@ -232,9 +232,9 @@ public class JsonStorageManager {
                 Uri treeUri = Uri.parse(uriStr);
                 DocumentFile dir = DocumentFile.fromTreeUri(context, treeUri);
                 if (dir != null) {
-                    DocumentFile file = dir.findFile(doc.getId() + ".json");
+                    DocumentFile file = dir.findFile(doc.getName() + ".json");
                     if (file == null) {
-                        file = dir.createFile("application/json", doc.getId() + ".json");
+                        file = dir.createFile("application/json", doc.getName() + ".json");
                     }
                     if (file != null) {
                         try (OutputStream os = context.getContentResolver().openOutputStream(file.getUri(), "rwt")) {
@@ -252,23 +252,44 @@ public class JsonStorageManager {
         return false;
     }
 
-    public boolean renameTreeDocument(String docId, String newName) {
-        TreeDocument doc = loadTreeDocument(docId);
+    public boolean renameTreeDocument(String oldName, String newName) {
+        TreeDocument doc = loadTreeDocument(oldName);
         if (doc != null) {
+            if (getStorageUriString().isEmpty()) {
+                File dir = getDefaultStorageDir();
+                File oldFile = new File(dir, oldName + ".json");
+                File newFile = new File(dir, newName + ".json");
+                if (oldFile.exists()) {
+                    oldFile.renameTo(newFile);
+                }
+            } else {
+                try {
+                    Uri treeUri = Uri.parse(getStorageUriString());
+                    DocumentFile dir = DocumentFile.fromTreeUri(context, treeUri);
+                    if (dir != null) {
+                        DocumentFile file = dir.findFile(oldName + ".json");
+                        if (file != null) {
+                            file.renameTo(newName + ".json");
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error renaming SAF file: " + e.getMessage());
+                }
+            }
             doc.setName(newName);
             return saveTreeDocument(doc);
         }
         return false;
     }
 
-    public boolean deleteTreeDocument(String docId) {
+    public boolean deleteTreeDocument(String docName) {
         String uriStr = getStorageUriString();
         long timestamp = System.currentTimeMillis();
-        String deletedFileName = docId + "_" + timestamp + ".deleted.json";
+        String deletedFileName = docName + "_" + timestamp + ".deleted.json";
 
         if (uriStr.isEmpty()) {
             File dir = getDefaultStorageDir();
-            File file = new File(dir, docId + ".json");
+            File file = new File(dir, docName + ".json");
             if (file.exists()) {
                 // Soft delete: Move to a "deleted" subfolder with timestamp
                 File deletedDir = new File(dir, "deleted");
@@ -283,10 +304,9 @@ public class JsonStorageManager {
                 Uri treeUri = Uri.parse(uriStr);
                 DocumentFile dir = DocumentFile.fromTreeUri(context, treeUri);
                 if (dir != null) {
-                    DocumentFile file = dir.findFile(docId + ".json");
+                    DocumentFile file = dir.findFile(docName + ".json");
                     if (file != null && file.exists()) {
                         // Rename inside the same folder to represent soft delete
-                        // Since DocumentFile.renameTo might not support path changes easily, we rename it directly in-place
                         return file.renameTo(deletedFileName);
                     }
                 }
